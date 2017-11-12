@@ -43,12 +43,24 @@ class User( object ):
       output += 'Date Created: {}'.format( self.dateCreated )
       return output
 
+   def usernameIs( self, username ):
+      assert self.active, 'Object is no longer accessible'
+      self.username = username
+
+   def save( self, con ):
+      assert self.active, 'Object is no longer accessible'
+      cur = con.cursor()
+      update = 'UPDATE User set username = \"%s\" where id=%d'
+      cur.execute( update % ( self.username, self.id ) )
+      con.commit()
+
    def delete( self, con, username='', id=0 ):
       assert self.active, 'Object is no longer accessible'
       cur = con.cursor()
       delete = "DELETE from User where id=%d"
       cur.execute( delete % self.id )
       self.active = False
+      con.commit()
 
 class Recipe( object ):
    '''

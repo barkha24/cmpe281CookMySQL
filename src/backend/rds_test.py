@@ -15,6 +15,22 @@ class RdsTest( unittest.TestCase ):
    def testPrint( self ):
       print self.user
 
+   def testUser( self ):
+      account = rds_wrapper.User( self.con, 'bobby' )
+      account.delete( self.con )
+      try:
+         print account
+         raise RuntimeError( 'Deleted object did not raise exception' )
+      except AssertionError:
+         pass
+      # Test rename
+      account_orig = rds_wrapper.User( self.con, 'charles' )
+      account_orig.usernameIs( 'Charlie' )
+      account_orig.save( self.con )
+      account_verify = rds_wrapper.User( self.con, 'Charlie' )
+      assert account_orig.id == account_verify.id
+      account_orig.delete( self.con )
+
    def tearDown( self ):
       self.user.delete( self.con )
       self.con.close()
