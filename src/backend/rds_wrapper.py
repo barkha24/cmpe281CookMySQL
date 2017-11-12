@@ -16,6 +16,16 @@ def connect_mysql():
                           passwd=MYSQL_PASS,
                           db=MYSQL_DB )
 
+
+def getRecipesForUser( con, user ):
+   '''
+   Return a list of recipe objects for the user
+   '''
+   cur = con.cursor()
+   select = "SELECT * from Recipe where ownerId=%d"
+   cur.execute( select % user.id )
+   return [ RecipeForUser( *entry ) for entry in cur ]
+
 class User( object ):
    '''
    User represents the user object uploading, modifying and accessing the
@@ -111,3 +121,16 @@ class Recipe( object ):
       delete = "DELETE from Recipe where id=%d"  
       cur.execute( delete % self.id )
       self.active = False
+
+class RecipeForUser( Recipe ):
+   '''
+   Another way of initializing, from previous query
+   '''
+   def __init__( self, id, title, ownerId, createdOn, updatedOn, bucket ):
+      self.id = id
+      self.title = title
+      self.ownerId = ownerId
+      self.createdOn = createdOn
+      self.updatedOn = updatedOn
+      self.bucket = bucket
+      self.active = True

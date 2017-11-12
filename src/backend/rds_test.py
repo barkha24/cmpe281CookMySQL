@@ -50,6 +50,25 @@ class RdsTest( unittest.TestCase ):
       finally:
          owner.delete( self.con )
 
+   def testRecipes( self ):
+      try:
+         recipes = []
+         owner = rds_wrapper.User( self.con, 'theChef' )
+         for i in range( 10 ):
+            recipeTitle = 'recipe%d' % i
+            recipes.append( rds_wrapper.Recipe( self.con, owner.id, recipeTitle ) )
+         # Now get recipes
+         newRecipes = rds_wrapper.getRecipesForUser( self.con, owner )
+         oldIds = [ recipe.id for recipe in recipes ]
+         oldIds.sort()
+         newIds = [ recipe.id for recipe in newRecipes ]
+         newIds.sort()
+         for i in range( 10 ):
+            assert newIds[i] == oldIds[i]
+         for recipe in newRecipes:
+            recipe.delete( self.con )
+      finally:
+         owner.delete( self.con )
 
    def tearDown( self ):
       self.user.delete( self.con )
