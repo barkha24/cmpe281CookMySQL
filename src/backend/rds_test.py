@@ -31,6 +31,26 @@ class RdsTest( unittest.TestCase ):
       assert account_orig.id == account_verify.id
       account_orig.delete( self.con )
 
+   def testRecipe( self ):
+      try:
+         owner = rds_wrapper.User( self.con, 'theCook' )
+         recipe = rds_wrapper.Recipe( self.con, owner.id, 'cheesecake' )
+         assert recipe.title == 'cheesecake'
+         recipe.titleIs( self.con, 'chocolate cheesecake' )
+         assert recipe.title == 'chocolate cheesecake'
+         recipe.save( self.con )
+         newrecipe = rds_wrapper.Recipe( self.con, owner.id, 'chocolate cheesecake' )
+         assert newrecipe.id == recipe.id
+         newrecipe.delete( self.con )
+         try:
+            print newrecipe
+            raise RuntimeError( 'Deleted object did not raise exception' )
+         except AssertionError:
+            pass
+      finally:
+         owner.delete( self.con )
+
+
    def tearDown( self ):
       self.user.delete( self.con )
       self.con.close()
