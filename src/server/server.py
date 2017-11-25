@@ -40,7 +40,7 @@ class Application( BaseHTTPServer.BaseHTTPRequestHandler ):
    def do_GET( self ):
       ''' Handle GET request '''
       self.send_response( 200 )
-      self.send_header( 'Content-type', 'text/html' )
+      self.send_header( 'Content-type', 'application/json' )
       self._headers()
       query = urlparse( self.path ).query
       path =  urlparse( self.path ).path
