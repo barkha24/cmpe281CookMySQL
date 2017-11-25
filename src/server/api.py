@@ -29,6 +29,18 @@ def api( endpoint, params ):
                       'createdOn' : "{}".format( recipe.createdOn ),
                       'updatedOn' : "{}".format( recipe.updatedOn ),
                       'bucket-audio' : recipe.bucketAudio }
+      elif endpoint == GET_RECIPES:
+         user = rds_wrapper.User( con, id=int( params[ 'ownerId' ] ), strict=True )
+         recipes = rds_wrapper.getRecipesForUser( con, user )
+         results = []
+         for recipe in recipes:
+            results.append( { 'id' : recipe.id,
+              'bucket-yaml' : recipe.bucket,
+              'createdOn' : "{}".format( recipe.createdOn ),
+              'updatedOn' : "{}".format( recipe.updatedOn ),
+              'bucket-audio' : recipe.bucketAudio } )
+         return '', results
+
       raise KeyError( 'Endpoint Not found' )
    except TypeError, e:
       return str( "Ensure that the ID field is in numeric format and Non-ID fields are in string format, " + str(e) ), {}
