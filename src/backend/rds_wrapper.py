@@ -31,7 +31,7 @@ class User( object ):
    User represents the user object uploading, modifying and accessing the
    recipe information.
    '''
-   def __init__( self, con, username='', id=0 ):
+   def __init__( self, con, username='', id=0, strict=False ):
       cur = con.cursor()
       select = "SELECT * from User where username=\"%s\" or id=%d"
       insert = "INSERT into User ( username ) values (\"%s\")"
@@ -41,8 +41,11 @@ class User( object ):
          if results:
             self.id, self.username, self.dateCreated = results[0]
             break
-         else:
+         elif not strict:
             cur.execute( insert % username )
+            con.commit()
+         else:
+            raise KeyError( 'User Not Found' )
       self.active = True
 
    def __repr__( self ):
