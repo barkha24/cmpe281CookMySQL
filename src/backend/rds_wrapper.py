@@ -79,7 +79,7 @@ class Recipe( object ):
    '''
    Recipe class represents a single recipe the user can upload, modify or delete
    '''
-   def __init__( self, con, ownerId, title='', id=0 ):
+   def __init__( self, con, ownerId, title='', id=0, strict=False ):
       assert ownerId, 'Owner for the Recipe object must be set'
       cur = con.cursor()
       while True:
@@ -93,10 +93,13 @@ class Recipe( object ):
             self.createdOn = results[0][3]
             self.updatedOn = results[0][4]
             self.bucket = results[0][5]
+            self.bucketAudio = results[0][6]
             break
-         else:
+         elif not strict:
             insert = "INSERT into Recipe (ownerId,title) values ( %d, \"%s\")"
             cur.execute( insert % (ownerId, title) )
+         else:
+            raise KeyError( 'Recipe Not Found' )
       self.active = True
 
    def __repr__( self ):
@@ -129,11 +132,12 @@ class RecipeForUser( Recipe ):
    '''
    Another way of initializing, from previous query
    '''
-   def __init__( self, id, title, ownerId, createdOn, updatedOn, bucket ):
+   def __init__( self, id, title, ownerId, createdOn, updatedOn, bucket, bucketAudio ):
       self.id = id
       self.title = title
       self.ownerId = ownerId
       self.createdOn = createdOn
       self.updatedOn = updatedOn
       self.bucket = bucket
+      self.bucketAudio = bucketAudio
       self.active = True

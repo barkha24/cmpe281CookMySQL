@@ -47,7 +47,7 @@ class Application( BaseHTTPServer.BaseHTTPRequestHandler ):
       params = { k:v[0] for k,v in parse_qs( query ).items() }
       self.end_headers()
       err, response = api.api( path, params )
-      print marshall( response )
+      print response
       self.wfile.write( marshall( response, err ) )
 
    def do_DELETE( self ):
