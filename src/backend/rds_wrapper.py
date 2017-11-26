@@ -118,6 +118,14 @@ class Recipe( object ):
       assert self.active, 'Object is no longer accessible'
       self.title = title
 
+   def yamlBucketKeyIs( self, con, key ):
+      assert self.active, 'Object is no longer accessible'
+      self.bucket = key
+
+   def audioBucketKeyIs( self, con, key ):
+      assert self.active, 'Object is no longer accessible'
+      self.audio = key
+
    def save( self, con ):
       assert self.active, 'Object is no longer accessible'
       cur = con.cursor()
