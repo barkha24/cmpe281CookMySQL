@@ -31,18 +31,22 @@ class User( object ):
    User represents the user object uploading, modifying and accessing the
    recipe information.
    '''
-   def __init__( self, con, username='', password='nopassword', id=0, strict=False ):
+   def __init__( self, con, username='', password='nopassword',
+                 firstname='nofirstname', lastname='nolastname',
+                 mobile='nomobile', id=0, strict=False ):
       cur = con.cursor()
       select = "SELECT * from User where username=\"%s\" or id=%d"
-      insert = "INSERT into User ( username ) values (\"%s\")"
+      insert = "INSERT into User ( username, password, firstname, lastname, mobile)\
+                values (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\")"
       while True:
          cur.execute( select % ( username, id ) )
          results = [ entry for entry in cur ]
          if results:
-            self.id, self.username, self.dateCreated, self.password = results[0]
+            self.id, self.username, self.dateCreated, self.password, \
+               self.firstname, self.lastname, self.mobile = results[0]
             break
          elif not strict:
-            cur.execute( insert % ( username, password ) )
+            cur.execute( insert % ( username, password, firstname, lastname, mobile ) )
             con.commit()
          else:
             raise KeyError( 'User Not Found' )

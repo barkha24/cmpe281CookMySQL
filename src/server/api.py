@@ -46,6 +46,9 @@ def api( endpoint, params, headers={} ):
             return 'Invalid authentication', []
          return  '', { 'id' : user.id,
                        'username' : user.username,
+                       'firstname' : user.firstname,
+                       'lastname' : user.lastname,
+                       'mobile' : user.mobile,
                        'dateCreated' : '{}'.format( user.dateCreated ) }
 
       elif endpoint == GET_RECIPE:
