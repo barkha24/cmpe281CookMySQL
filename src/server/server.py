@@ -46,7 +46,7 @@ class Application( BaseHTTPServer.BaseHTTPRequestHandler ):
       path =  urlparse( self.path ).path
       params = { k:v[0] for k,v in parse_qs( query ).items() }
       self.end_headers()
-      err, response = api.api( path, params )
+      err, response = api.api( path, params, self.headers )
       print response
       self.wfile.write( marshall( response, err ) )
 

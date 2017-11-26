@@ -2,35 +2,67 @@
 
 from backend import rds_wrapper
 import datetime
+import tokens
 
 GET_RECIPE = '/getRecipe'
 GET_RECIPES = '/getRecipes'
 GET_USER_INFO = '/userInfo'
+GET_AUTHENTICATE = '/authenticate'
 
-def api( endpoint, params ):
+def api( endpoint, params, headers={} ):
    '''
    Api handling module for the servers
    '''
    con = rds_wrapper.connect_mysql()
+   tokenString = headers.get( 'token', '' )
    print endpoint
    try:
-      if endpoint == GET_USER_INFO:
+      if endpoint == GET_AUTHENTICATE:
          user = rds_wrapper.User( con, params[ 'username' ], strict=True )
-         print user
+         try:
+            token = tokens.Token( user.username, params[ 'password' ] )
+            return '', { 'token' : token.token,
+                         'username' : params[ 'username' ],
+                         'userId' : token.userId(),
+                         'until' : token.until() }
+         except AssertionError:
+            return 'Invalid authentication', ''
+
+
+      elif endpoint == GET_USER_INFO:
+         user = rds_wrapper.User( con, params[ 'username' ], strict=True )
+         try:
+            token = tokens.Token( user.username, token=tokenString )
+            assert token.isValid()
+         except AssertionError:
+            return 'Invalid authentication', []
          return  '', { 'id' : user.id,
                        'username' : user.username,
                        'dateCreated' : '{}'.format( user.dateCreated ) }
+
       elif endpoint == GET_RECIPE:
          recipe = rds_wrapper.Recipe( con, int( params[ 'ownerId' ] ),
                                       id=int( params[ 'id' ] ) )
-         print recipe
+         user = rds_wrapper.User( con, id=int( params[ 'ownerId' ]), strict=True )
+         try:
+            token = tokens.Token( user.username, token=tokenString )
+            assert token.isValid()
+         except AssertionError:
+            return 'Invalid authentication', []
          return '', { 'id' : recipe.id,
                       'bucket-yaml' : recipe.bucket,
                       'createdOn' : "{}".format( recipe.createdOn ),
                       'updatedOn' : "{}".format( recipe.updatedOn ),
                       'bucket-audio' : recipe.bucketAudio }
+
       elif endpoint == GET_RECIPES:
          user = rds_wrapper.User( con, id=int( params[ 'ownerId' ] ), strict=True )
+         try:
+            token = tokens.Token( user.username, token=tokenString )
+            assert token.isValid()
+         except AssertionError:
+            return 'Invalid authentication', []
+
          recipes = rds_wrapper.getRecipesForUser( con, user )
          results = []
          for recipe in recipes:

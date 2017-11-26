@@ -31,7 +31,7 @@ class User( object ):
    User represents the user object uploading, modifying and accessing the
    recipe information.
    '''
-   def __init__( self, con, username='', id=0, strict=False ):
+   def __init__( self, con, username='', password='nopassword', id=0, strict=False ):
       cur = con.cursor()
       select = "SELECT * from User where username=\"%s\" or id=%d"
       insert = "INSERT into User ( username ) values (\"%s\")"
@@ -39,10 +39,10 @@ class User( object ):
          cur.execute( select % ( username, id ) )
          results = [ entry for entry in cur ]
          if results:
-            self.id, self.username, self.dateCreated = results[0]
+            self.id, self.username, self.dateCreated, self.password = results[0]
             break
          elif not strict:
-            cur.execute( insert % username )
+            cur.execute( insert % ( username, password ) )
             con.commit()
          else:
             raise KeyError( 'User Not Found' )
@@ -55,6 +55,10 @@ class User( object ):
       output += 'Username: {}\n'.format( self.username )
       output += 'Date Created: {}'.format( self.dateCreated )
       return output
+
+   def verifyPassword( self, password ):
+      ''' must be hashed string '''
+      return password == self.password
 
    def usernameIs( self, username ):
       assert self.active, 'Object is no longer accessible'
