@@ -31,11 +31,19 @@ class Application( BaseHTTPServer.BaseHTTPRequestHandler ):
 
    def do_POST( self ):
       ''' Handle POST request '''
+      def _decoder( length ):
+         decoded = self.rfile.read( length )
+         return json.loads( decoded.decode( 'utf-8' ) )
+
       self.send_response( 200 )
       self.send_header( 'Content-type', 'text/html' )
+      data = _decoder( int( self.headers[ 'Content-Length' ] ) )
       self._headers()
       self.end_headers()
-      self.wfile.write( 'Test POST' )
+      path =  urlparse( self.path ).path
+      err, response = api.api( path, data, self.headers )
+      print response
+      self.wfile.write( marshall( response, err ) )
 
    def do_GET( self ):
       ''' Handle GET request '''

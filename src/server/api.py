@@ -8,6 +8,7 @@ GET_RECIPE = '/getRecipe'
 GET_RECIPES = '/getRecipes'
 GET_USER_INFO = '/userInfo'
 GET_AUTHENTICATE = '/authenticate'
+POST_SIGN_UP = '/signup'
 
 #
 # API End point
@@ -35,6 +36,19 @@ def api( endpoint, params, headers={} ):
                          'until' : token.until() }
          except AssertionError:
             return 'Invalid authentication', ''
+
+      elif endpoint == POST_SIGN_UP:
+         try:
+            user = rds_wrapper.User( con, params[ 'username' ], strict=True )
+            return 'Username already exists', []
+         except KeyError:
+            user = rds_wrapper.User( con, params[ 'username' ],
+                                          tokens.hashPassword( params[ 'password' ], params[ 'username' ] ),
+                                          params[ 'firstname' ],
+                                          params[ 'lastname' ],
+                                          params[ 'mobile' ]
+                                    )
+            return '', "Succesful! Your account has been created.";
 
 
       elif endpoint == GET_USER_INFO:

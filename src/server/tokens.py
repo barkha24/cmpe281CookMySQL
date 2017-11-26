@@ -5,6 +5,10 @@ import datetime
 from backend import rds_wrapper
 
 hour = datetime.datetime.now().strftime("%Y-%m-%d %H")
+SALT = 'RECIPE'
+
+def hashPassword( password, username ):
+   return sha256( password + username + SALT ).hexdigest()
 
 class Token( object ):
    '''
@@ -21,9 +25,7 @@ class Token( object ):
          self.token = token
       else:
          user = rds_wrapper.User( con, self.username, strict=True )
-         print password
-         password = sha256( password ).hexdigest()
-         print password
+         password = hashPassword( password, username )
          assert user.verifyPassword( password ), 'Incorrect password'
          self.token =  sha256( user.password + hour ).hexdigest()
 
