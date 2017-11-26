@@ -9,6 +9,14 @@ GET_RECIPES = '/getRecipes'
 GET_USER_INFO = '/userInfo'
 GET_AUTHENTICATE = '/authenticate'
 
+#
+# API End point
+#
+# /getRecipe?format=json&recipeId=<recipeId> - get recipe instruction in JSON format/getRecipe?format=json&recipeId=<recipeId>
+# /getRecipe?format=mp3 - get recipe instruction in mp3 format
+# /userInfo?userId=<userId> - get user information
+# /getRecipes?user=<userId> - get list of recipes in JSON format
+
 def api( endpoint, params, headers={} ):
    '''
    Api handling module for the servers
@@ -80,8 +88,3 @@ def api( endpoint, params, headers={} ):
       return str( e ), {}
    except ValueError, e:
       return str( "Ensure that the ID field is in numeric format and Non-ID fields are in string format, " + str( e) ), {}
-
-#/getRecipe?format=json&recipeId=<recipeId> - get recipe instruction in JSON format/getRecipe?format=json&recipeId=<recipeId>
-#/getRecipe?format=mp3 - get recipe instruction in mp3 format
-#/userInfo?userId=<userId> - get user information
-#/getRecipes?user=<userId> - get list of recipes in JSON format
