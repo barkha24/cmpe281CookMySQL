@@ -11,7 +11,6 @@ GET_AUTHENTICATE = '/authenticate'
 POST_SIGN_UP = '/signup'
 POST_UPLOAD_RECIPE = '/uploadRecipe'
 
-
 #
 # API End point
 #
@@ -20,94 +19,117 @@ POST_UPLOAD_RECIPE = '/uploadRecipe'
 # /userInfo?userId=<userId> - get user information
 # /getRecipes?user=<userId> - get list of recipes in JSON format
 
+con = rds_wrapper.connect_mysql()
+
+def authenticate( params ):
+   user = rds_wrapper.User( con, params[ 'username' ], strict=True )
+   try:
+      token = tokens.Token( user.username, params[ 'password' ] )
+      return '', { 'token' : token.token_,
+                   'username' : params[ 'username' ],
+                   'userId' : token.userId(),
+                   'until' : token.until() }
+   except AssertionError:
+      return 'Invalid authentication', ''
+
+def postSignUp( params ):
+   try:
+      user = rds_wrapper.User( con, params[ 'username' ], strict=True )
+      return 'Username already exists', []
+   except KeyError:
+      user = rds_wrapper.User( con, params[ 'username' ],
+                                    tokens.hashPassword( params[ 'password' ], params[ 'username' ] ),
+                                    params[ 'firstname' ],
+                                    params[ 'lastname' ],
+                                    params[ 'mobile' ]
+                              )
+      return '', "Succesful! Your account has been created.";
+
+
+def postUploadRecipe( params, tokenString ):
+   try:
+      rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
+                          params[ 'recipeTitle' ], strict=True )
+      return 'Recipe already exists', []
+   except KeyError:
+      recipe = rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
+                                   params[ 'recipeTitle' ] )
+      return '', "Succesful! Recipe has been uploaded.";
+
+
+def getUserInfo( params, tokenString ):
+   user = rds_wrapper.User( con, params[ 'username' ], strict=True )
+   try:
+      token = tokens.Token( user.username, token=tokenString )
+      assert token.isValid()
+   except AssertionError:
+      return 'Invalid authentication', []
+   return  '', { 'id' : user.id,
+                 'username' : user.username,
+                 'firstname' : user.firstname,
+                 'lastname' : user.lastname,
+                 'mobile' : user.mobile,
+                 'dateCreated' : '{}'.format( user.dateCreated ) }
+
+
+def getRecipe( params, tokenString ):
+   recipe = rds_wrapper.Recipe( con, int( params[ 'ownerId' ] ),
+                                id=int( params[ 'id' ] ) )
+   user = rds_wrapper.User( con, id=int( params[ 'ownerId' ]), strict=True )
+   try:
+      token = tokens.Token( user.username, token=tokenString )
+      assert token.isValid()
+   except AssertionError:
+      return 'Invalid authentication', []
+   return '', { 'id' : recipe.id,
+                'bucket-yaml' : recipe.bucket,
+                'createdOn' : "{}".format( recipe.createdOn ),
+                'updatedOn' : "{}".format( recipe.updatedOn ),
+                'bucket-audio' : recipe.bucketAudio }
+
+
+def getRecipes( params, tokenString ):
+   user = rds_wrapper.User( con, id=int( params[ 'ownerId' ] ), strict=True )
+   try:
+      token = tokens.Token( user.username, token=tokenString )
+      assert token.isValid()
+   except AssertionError:
+      return 'Invalid authentication', []
+
+   recipes = rds_wrapper.getRecipesForUser( con, user )
+   results = []
+   for recipe in recipes:
+      results.append( { 'id' : recipe.id,
+        'bucket-yaml' : recipe.bucket,
+        'createdOn' : "{}".format( recipe.createdOn ),
+        'updatedOn' : "{}".format( recipe.updatedOn ),
+        'bucket-audio' : recipe.bucketAudio } )
+   return '', results
+
 def api( endpoint, params, headers={} ):
    '''
    Api handling module for the servers
    '''
-   con = rds_wrapper.connect_mysql()
    tokenString = headers.get( 'token', '' )
    print endpoint
    try:
       if endpoint == GET_AUTHENTICATE:
-         user = rds_wrapper.User( con, params[ 'username' ], strict=True )
-         try:
-            token = tokens.Token( user.username, params[ 'password' ] )
-            return '', { 'token' : token.token,
-                         'username' : params[ 'username' ],
-                         'userId' : token.userId(),
-                         'until' : token.until() }
-         except AssertionError:
-            return 'Invalid authentication', ''
+         return authenticate( params )
 
       elif endpoint == POST_UPLOAD_RECIPE:
-         try:
-            rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
-                                params[ 'recipeTitle' ], strict=True )
-            return 'Recipe already exists', []
-         except KeyError:
-            recipe = rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
-                                         params[ 'recipeTitle' ] )
+         return postUploadRecipe( params, tokenString )
 
       elif endpoint == POST_SIGN_UP:
-         try:
-            user = rds_wrapper.User( con, params[ 'username' ], strict=True )
-            return 'Username already exists', []
-         except KeyError:
-            user = rds_wrapper.User( con, params[ 'username' ],
-                                          tokens.hashPassword( params[ 'password' ], params[ 'username' ] ),
-                                          params[ 'firstname' ],
-                                          params[ 'lastname' ],
-                                          params[ 'mobile' ]
-                                    )
-            return '', "Succesful! Your account has been created.";
-
+         return postSignUp( params, tokenString )
 
       elif endpoint == GET_USER_INFO:
-         user = rds_wrapper.User( con, params[ 'username' ], strict=True )
-         try:
-            token = tokens.Token( user.username, token=tokenString )
-            assert token.isValid()
-         except AssertionError:
-            return 'Invalid authentication', []
-         return  '', { 'id' : user.id,
-                       'username' : user.username,
-                       'firstname' : user.firstname,
-                       'lastname' : user.lastname,
-                       'mobile' : user.mobile,
-                       'dateCreated' : '{}'.format( user.dateCreated ) }
+         return getUserInfo( params, tokenString )
 
       elif endpoint == GET_RECIPE:
-         recipe = rds_wrapper.Recipe( con, int( params[ 'ownerId' ] ),
-                                      id=int( params[ 'id' ] ) )
-         user = rds_wrapper.User( con, id=int( params[ 'ownerId' ]), strict=True )
-         try:
-            token = tokens.Token( user.username, token=tokenString )
-            assert token.isValid()
-         except AssertionError:
-            return 'Invalid authentication', []
-         return '', { 'id' : recipe.id,
-                      'bucket-yaml' : recipe.bucket,
-                      'createdOn' : "{}".format( recipe.createdOn ),
-                      'updatedOn' : "{}".format( recipe.updatedOn ),
-                      'bucket-audio' : recipe.bucketAudio }
+         return getRecipe( params, tokenString )
 
       elif endpoint == GET_RECIPES:
-         user = rds_wrapper.User( con, id=int( params[ 'ownerId' ] ), strict=True )
-         try:
-            token = tokens.Token( user.username, token=tokenString )
-            assert token.isValid()
-         except AssertionError:
-            return 'Invalid authentication', []
-
-         recipes = rds_wrapper.getRecipesForUser( con, user )
-         results = []
-         for recipe in recipes:
-            results.append( { 'id' : recipe.id,
-              'bucket-yaml' : recipe.bucket,
-              'createdOn' : "{}".format( recipe.createdOn ),
-              'updatedOn' : "{}".format( recipe.updatedOn ),
-              'bucket-audio' : recipe.bucketAudio } )
-         return '', results
+         return getRecipes( params, tokenString )
 
       raise KeyError( 'Endpoint Not found' )
    except TypeError, e:

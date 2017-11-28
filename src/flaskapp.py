@@ -130,8 +130,43 @@ def downloadfile():
         return response
 
 
+#------------------------ HSHIN ---------------------------------
+
+from server import api
+import json
+
+def toJson( err, response ):
+   return json.dumps({ "error" : err, "response" : response })
+
+@app.route( api.GET_AUTHENTICATE, methods=['GET'])
+def authenticate():
+   err, response = api.authenticate( request.args )
+   return toJson( err, response )
+
+@app.route( api.POST_UPLOAD_RECIPE, methods=['POST'])
+def uploadRecipe():
+   err, response = api.postUploadRecipe( request.args, request.headers.get( 'token' ) )
+   return toJson( err, response )
+
+@app.route( api.POST_UPLOAD_RECIPE, methods=['POST'])
+def postSignUp():
+   err, response = api.postSignUp( request.args )
+   return toJson( err, response )
+
+@app.route( api.GET_USER_INFO, methods=['GET'])
+def getUserInfo():
+   err, response = api.getUserInfo( request.args, request.headers.get( 'token' ) )
+   return toJson( err, response )
+
+@app.route( api.GET_RECIPE, methods=['GET'])
+def getRecipe():
+   err, response = api.getRecipe( request.args, request.headers.get( 'token' ) )
+   return toJson( err, response )
+
+@app.route( api.GET_RECIPES, methods=['GET'])
+def getRecipes():
+   err, response = api.getRecipe( request.args, request.headers.get( 'token' ) )
+   return toJson( err, response )
+
 if __name__ == '__main__':
-  app.run()
-
-
-
+  app.run( host='0.0.0.0', port=8084 )
