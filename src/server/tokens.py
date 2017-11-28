@@ -22,12 +22,12 @@ class Token( object ):
       self.valid = valid
       self.created = datetime.datetime.now()
       if token:
-         self.token = token
+         self.token_ = token
       else:
          user = rds_wrapper.User( con, self.username, strict=True )
          password = hashPassword( password, username )
          assert user.verifyPassword( password ), 'Incorrect password'
-         self.token =  sha256( user.password + hour ).hexdigest()
+         self.token_ =  sha256( user.password + hour ).hexdigest()
 
    def userId( self ):
       con = rds_wrapper.connect_mysql()
@@ -35,7 +35,7 @@ class Token( object ):
       return user.id
 
    def token( self ):
-      return self.token
+      return self.token_
 
    def until( self ):
       hour = self.created + datetime.timedelta( hours = self.valid )
@@ -48,8 +48,7 @@ class Token( object ):
       for i in range( self.valid ):
          hour = (datetime.datetime.now() - datetime.timedelta( hours = i )).strftime("%Y-%m-%d %H")
          testSha = sha256( user.password + hour ).hexdigest()
-         print testSha
-         if ( self.token == testSha  ):
+         if ( self.token_ == testSha  ):
             return True
       if not valid:
          return False
