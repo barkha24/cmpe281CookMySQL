@@ -42,11 +42,11 @@ def api( endpoint, params, headers={} ):
       elif endpoint == POST_UPLOAD_RECIPE:
          try:
             rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
-                                params[ 'recipeTitle' ] ), strict=True )
+                                params[ 'recipeTitle' ], strict=True )
             return 'Recipe already exists', []
          except KeyError:
             recipe = rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
-                                         params[ 'recipeTitle' ] ) )
+                                         params[ 'recipeTitle' ] )
 
       elif endpoint == POST_SIGN_UP:
          try:
