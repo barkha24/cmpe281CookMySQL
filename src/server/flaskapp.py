@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import ConfigParser
 from boto3 import client
 import tempfile
@@ -17,7 +19,7 @@ import cgitb; cgitb.enable()
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from flask import Response
 from flask import make_response
-from boto.s3.key import Key
+#from boto.s3.key import Key
 from boto3.session import Session
 import boto3.session
 from botocore.exceptions import ClientError
@@ -40,7 +42,6 @@ def test():
         global apwd
         global bucket_name
         username=request.form['userName']
-                                                                                                                             1,1           Top
         s3 = boto3.resource('s3',aws_access_key_id='access_key',aws_secret_access_key='secret key')
         fContent=s3.Object('sdg-cred', 'creds.txt').get()['Body'].read()
         fw=open('/var/www/html/flaskapp/input1.txt','w+')
