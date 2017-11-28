@@ -9,6 +9,8 @@ GET_RECIPES = '/getRecipes'
 GET_USER_INFO = '/userInfo'
 GET_AUTHENTICATE = '/authenticate'
 POST_SIGN_UP = '/signup'
+POST_UPLOAD_RECIPE = '/uploadRecipe'
+
 
 #
 # API End point
@@ -36,6 +38,15 @@ def api( endpoint, params, headers={} ):
                          'until' : token.until() }
          except AssertionError:
             return 'Invalid authentication', ''
+
+      elif endpoint == POST_UPLOAD_RECIPE:
+         try:
+            rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
+                                params[ 'recipeTitle' ] ), strict=True )
+            return 'Recipe already exists', []
+         except KeyError:
+            recipe = rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
+                                         params[ 'recipeTitle' ] ) )
 
       elif endpoint == POST_SIGN_UP:
          try:
