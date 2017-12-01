@@ -29,32 +29,15 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 app.secret_key = 'sdg is crazy'
 config = ConfigParser.ConfigParser()
 
-aid = ''
-apwd=''
-bucket_name=''
-@app.route('/')
-def hello_world():
-        return render_template('index.html')
+AWS_ACCESS_ID = os.environ.get( 'AWS_ACCESS_ID' )
+AWS_SECRET_KEY = os.environ.get( 'AWS_SECRET_KEY' )
+assert len( AWS_ACCESS_ID ) > 0, 'Please set AWS access key'
+assert len( AWS_SECRET_KEY ) > 0, 'Please set AWS secret key'
 
-@app.route('/test',methods=['GET', 'POST'])
-def test():
-        global aid
-        global apwd
-        global bucket_name
-        username=request.form['userName']
-        s3 = boto3.resource('s3',aws_access_key_id='access_key',aws_secret_access_key='secret key')
-        fContent=s3.Object('sdg-cred', 'creds.txt').get()['Body'].read()
-        fw=open('/var/www/html/flaskapp/input1.txt','w+')
-        fw.write(fContent)
-        fw.close()
-        myfile=open('/var/www/html/flaskapp/input1.txt','r')
-        config = ConfigParser.ConfigParser()
-        config.readfp(myfile)
-        conn=boto3.resource('s3',aws_access_key_id=config.get(username, 'aws_access_key_id'),aws_secret_access_key=config.get(username, 'aws_secret_access_key'))
-        aid=aws_access_key_id=config.get(username, 'aws_access_key_id')
-        apwd=aws_secret_access_key=config.get(username, 'aws_secret_access_key')
-        bucket_name='sdg-'+username
-        return render_template('welcome.html')
+from backend import s3_helper
+
+bucket_name_yaml = 'cmpe281-recipe'
+bucket_name_mp3 = 'cmpe281-mp3'
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -68,9 +51,22 @@ def DeleteFile():
 @app.route('/delfile',methods=['POST'])
 def delfile():
         filename=request.form['fileName']
-        s3 = boto3.resource('s3',aws_access_key_id=aid,aws_secret_access_key=apwd)
-        s3.Object(bucket_name, filename).delete()
-        return 'File deleted'
+        request.args[ 'recipeTitle' ] =  filename
+        err, response = api.postDeleteRecipe( request.args, request.headers.get( 'token' ) )
+        if err:
+           return toJson( err, response )
+        # Data is all cleared, now delete the bucket objects
+        try:
+           for bucket_name in ( bucket_name_yaml, bucket_name_mp3 ):
+              bucketkey = s3_helper.key( filename )
+              s3 = boto3.resource( 's3',
+                                   aws_access_key_id=AWS_ACCESS_ID,
+                                   aws_secret_access_key=AWS_SECRET_KEY)
+              s3.Object( bucket_name, bucketkey ).delete() 
+        except Exception, e:
+           return ( str(e), '' )
+        return toJson( err, response )
+
 
 #-----------------------------------File Upload ------------------------------
 @app.route('/file-upload', methods=['GET', 'POST'])
@@ -86,8 +82,14 @@ def saveFile():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
+        request.args[ 'recipeTitle' ] = file.filename
+        err, response = api.postDeleteRecipe( request.args, request.headers.get( 'token' ) )
+        if err:
+           return toJson( err, response )
+
         if file and allowed_file(file.filename):
                 filename =  file.filename
+                bucketkey = s3_helper.key( filename )
                 fContent = file.read()
 
                 temporary_file = tempfile.NamedTemporaryFile()
@@ -95,18 +97,21 @@ def saveFile():
                 fw.write(fContent)
                 fw.close()
                 data=open(temporary_file.name,'r')
-                s3 = boto3.resource('s3',aws_access_key_id=aid,aws_secret_access_key=apwd)
-                s3.Bucket(bucket_name).put_object(Key=filename, Body=data)
-                return 'file uploaded'
-        return 'Invalid File extension'
+                s3 = boto3.resource( 's3',
+                                     aws_access_key_id=AWS_ACCESS_ID,
+                                     aws_secret_access_key=AWS_SECRET_KEY )
+                s3.Bucket(bucket_name_yaml).put_object(Key=bucketkey, Body=data)
+                return toJson( err, response )
+        return toJson( 'Invalid File extension', '' )
 
 #----------------------- List Files -------------------------------
 @app.route('/ListFiles',methods=['GET','POST'])
 def ListFiles():
         html = ''
-        s3 = boto3.resource('s3',aws_access_key_id=aid,aws_secret_access_key=apwd)
+        s3 = boto3.resource('s3',aws_access_key_id=AWS_ACCESS_ID,
+                                 aws_secret_access_key=AWS_SECRET_KEY )
         temp = []
-        bucket=s3.Bucket(bucket_name)
+        bucket=s3.Bucket(bucket_name_yaml)
         for obj in bucket.objects.all():
                 temp.append(obj.key)
         html = '''<html>
@@ -123,8 +128,9 @@ def fileDownload():
 @app.route('/downloadfile',methods=['POST'])
 def downloadfile():
         filename=request.form['fileName']
-        s3 = boto3.resource('s3',aws_access_key_id=aid,aws_secret_access_key=apwd)
-        fContent=s3.Object(bucket_name, filename).get()['Body'].read()
+        s3 = boto3.resource('s3',aws_access_key_id=AWS_ACCESS_ID,aws_secret_access_key=AWS_SECRET_KEY)
+        bucketkey = s3_helper.key( filename )
+        fContent=s3.Object(bucket_name, bucketkey).get()['Body'].read()
         response = make_response(fContent)
         response.headers["Content-Disposition"] = "attachment; filename="+filename+";"
         return response
@@ -138,19 +144,25 @@ import json
 def toJson( err, response ):
    return json.dumps({ "error" : err, "response" : response })
 
-@app.route( api.GET_AUTHENTICATE, methods=['GET'])
+def parseInput():
+   if request.data:
+      print request.data
+      return json.loads( request.data )
+   return request.form
+
+@app.route( api.POST_AUTHENTICATE, methods=['POST'])
 def authenticate():
-   err, response = api.authenticate( request.args )
+   err, response = api.authenticate( parseInput() )
    return toJson( err, response )
 
 @app.route( api.POST_UPLOAD_RECIPE, methods=['POST'])
 def uploadRecipe():
-   err, response = api.postUploadRecipe( request.args, request.headers.get( 'token' ) )
+   err, response = api.postUploadRecipe( parseInput(), request.headers.get( 'token' ) )
    return toJson( err, response )
 
-@app.route( api.POST_UPLOAD_RECIPE, methods=['POST'])
+@app.route( api.POST_SIGN_UP, methods=['POST'])
 def postSignUp():
-   err, response = api.postSignUp( request.args )
+   err, response = api.postSignUp( parseInput() )
    return toJson( err, response )
 
 @app.route( api.GET_USER_INFO, methods=['GET'])
@@ -169,4 +181,4 @@ def getRecipes():
    return toJson( err, response )
 
 if __name__ == '__main__':
-  app.run( host='0.0.0.0', port=8084 )
+  app.run( host='0.0.0.0', port=8084, debug=True )

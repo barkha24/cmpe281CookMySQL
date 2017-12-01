@@ -28,6 +28,7 @@ class Token( object ):
          password = hashPassword( password, username )
          assert user.verifyPassword( password ), 'Incorrect password'
          self.token_ =  sha256( user.password + hour ).hexdigest()
+         print user.password, hour,'!'
 
    def userId( self ):
       con = rds_wrapper.connect_mysql()
@@ -47,7 +48,10 @@ class Token( object ):
       valid = False
       for i in range( self.valid ):
          hour = (datetime.datetime.now() - datetime.timedelta( hours = i )).strftime("%Y-%m-%d %H")
+         print user.password, hour,'!'
          testSha = sha256( user.password + hour ).hexdigest()
+         print testSha
+         print self.token_
          if ( self.token_ == testSha  ):
             return True
       if not valid:

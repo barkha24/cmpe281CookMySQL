@@ -7,7 +7,7 @@ import tokens
 GET_RECIPE = '/getRecipe'
 GET_RECIPES = '/getRecipes'
 GET_USER_INFO = '/userInfo'
-GET_AUTHENTICATE = '/authenticate'
+POST_AUTHENTICATE = '/authenticate'
 POST_SIGN_UP = '/signup'
 POST_UPLOAD_RECIPE = '/uploadRecipe'
 
@@ -21,7 +21,15 @@ POST_UPLOAD_RECIPE = '/uploadRecipe'
 
 con = rds_wrapper.connect_mysql()
 
+def t( string ):
+   print string
+
 def authenticate( params ):
+   t( 'Authenticating with params {}'.format( params ) )
+   print params
+   print 'a'
+   print params[ 'username' ]
+   print 'a'
    user = rds_wrapper.User( con, params[ 'username' ], strict=True )
    try:
       token = tokens.Token( user.username, params[ 'password' ] )
@@ -31,8 +39,12 @@ def authenticate( params ):
                    'until' : token.until() }
    except AssertionError:
       return 'Invalid authentication', ''
+   except Exception, e:
+      print e
+      return str( e ), ''
 
 def postSignUp( params ):
+   t( 'Sign up with params {}'.format( params ) )
    try:
       user = rds_wrapper.User( con, params[ 'username' ], strict=True )
       return 'Username already exists', []
@@ -45,6 +57,13 @@ def postSignUp( params ):
                               )
       return '', "Succesful! Your account has been created.";
 
+def postDeleteRecipe( params, tokenString ):
+   try:
+      recipe = rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
+                                   params[ 'recipeTitle' ] )
+      recipe.delete( self.con )
+   except KeyError:
+      return 'Recipe not found', ''
 
 def postUploadRecipe( params, tokenString ):
    try:
@@ -113,7 +132,7 @@ def api( endpoint, params, headers={} ):
    tokenString = headers.get( 'token', '' )
    print endpoint
    try:
-      if endpoint == GET_AUTHENTICATE:
+      if endpoint == POST_AUTHENTICATE:
          return authenticate( params )
 
       elif endpoint == POST_UPLOAD_RECIPE:
