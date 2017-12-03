@@ -24,7 +24,8 @@ def getRecipesForUser( con, user ):
    cur = con.cursor()
    select = "SELECT * from Recipe where ownerId=%s"
    cur.execute( select % user.id )
-   return [ RecipeForUser( *entry ) for entry in cur ]
+   result = [ RecipeForUser( *entry ) for entry in cur ]
+   return result
 
 class User( object ):
    '''
@@ -133,8 +134,8 @@ class Recipe( object ):
    def save( self, con ):
       assert self.active, 'Object is no longer accessible'
       cur = con.cursor()
-      update = 'UPDATE Recipe set title = %s where id= %s'
-      cur.execute( update, ( self.title, self.id ) )
+      update = 'UPDATE Recipe set title = %s, bucket = %s, bucketAudio = %s where id= %s'
+      cur.execute( update, ( self.title, self.bucket, self.audio, self.id ) )
       con.commit()
 
    def delete( self, con, username='', id=0 ):

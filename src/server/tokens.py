@@ -16,7 +16,7 @@ class Token( object ):
    back to the caller). If token string is set, it can be used
    to authenticate a user.
    '''
-   def __init__( self, username, password='', token='', valid=1 ):
+   def __init__( self, username, password='', token='', valid=5 ):
       self.username = username
       con = rds_wrapper.connect_mysql()
       self.valid = valid

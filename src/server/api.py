@@ -4,13 +4,6 @@ from backend import rds_wrapper
 import datetime
 import tokens
 
-GET_RECIPE = '/getRecipe'
-GET_RECIPES = '/getRecipes'
-GET_USER_INFO = '/userInfo'
-POST_AUTHENTICATE = '/authenticate'
-POST_SIGN_UP = '/signup'
-POST_UPLOAD_RECIPE = '/uploadRecipe'
-
 #
 # API End point
 #
@@ -18,6 +11,18 @@ POST_UPLOAD_RECIPE = '/uploadRecipe'
 # /getRecipe?format=mp3 - get recipe instruction in mp3 format
 # /userInfo?userId=<userId> - get user information
 # /getRecipes?user=<userId> - get list of recipes in JSON format
+#
+
+GET_RECIPE = '/getRecipe'
+GET_RECIPES = '/getRecipes'
+GET_USER_INFO = '/userInfo'
+POST_AUTHENTICATE = '/authenticate'
+POST_SIGN_UP = '/signup'
+POST_UPLOAD_RECIPE = '/uploadRecipe'
+GET_DOWNLOAD_FILE = '/fileDownload'
+GET_LIST_FILES= '/listFiles'
+POST_UPLOAD_FILE = '/fileUpload'
+POST_DELETE_FILE = '/fileDelete'
 
 con = rds_wrapper.connect_mysql()
 
@@ -27,11 +32,9 @@ def t( string ):
 def authenticate( params ):
    t( 'Authenticating with params {}'.format( params ) )
    print params
-   print 'a'
    print params[ 'username' ]
-   print 'a'
-   user = rds_wrapper.User( con, params[ 'username' ], strict=True )
    try:
+      user = rds_wrapper.User( con, params[ 'username' ], strict=True )
       token = tokens.Token( user.username, params[ 'password' ] )
       return '', { 'token' : token.token_,
                    'username' : params[ 'username' ],
@@ -39,6 +42,8 @@ def authenticate( params ):
                    'until' : token.until() }
    except AssertionError:
       return 'Invalid authentication', ''
+   except KeyError:
+      return 'Username %s not found' % params[ 'username' ], ''
    except Exception, e:
       print e
       return str( e ), ''
@@ -49,46 +54,58 @@ def postSignUp( params ):
       user = rds_wrapper.User( con, params[ 'username' ], strict=True )
       return 'Username already exists', []
    except KeyError:
-      user = rds_wrapper.User( con, params[ 'username' ],
-                                    tokens.hashPassword( params[ 'password' ], params[ 'username' ] ),
-                                    params[ 'firstname' ],
-                                    params[ 'lastname' ],
-                                    params[ 'mobile' ]
-                              )
+      try:
+         user = rds_wrapper.User( con, params[ 'username' ],
+                                       tokens.hashPassword( params[ 'password' ], params[ 'username' ] ),
+                                       params[ 'firstname' ],
+                                       params[ 'lastname' ],
+                                       params[ 'mobile' ]
+                                 )
+      except KeyError, e:
+         return 'Missing information %s' % str(e), '';
       return '', "Succesful! Your account has been created.";
 
 def postDeleteRecipe( params, tokenString ):
    try:
-      recipe = rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
-                                   params[ 'recipeTitle' ] )
-      recipe.delete( self.con )
-   except KeyError:
-      return 'Recipe not found', ''
+      recipe = rds_wrapper.Recipe( con, params[ 'ownerId' ],
+                                   params[ 'fileName' ] )
+      recipe.delete( con )
+      return '', ( recipe.bucket, recipe.bucketAudio )
+   except KeyError, e:
+      return 'Recipe not found:' + str(e), ''
 
 def postUploadRecipe( params, tokenString ):
    try:
-      rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
+      rds_wrapper.Recipe( con, params[ 'ownerId' ],
                           params[ 'recipeTitle' ], strict=True )
       return 'Recipe already exists', []
    except KeyError:
-      recipe = rds_wrapper.Recipe( self.con, params[ 'ownerId' ],
+      recipe = rds_wrapper.Recipe( con, params[ 'ownerId' ],
                                    params[ 'recipeTitle' ] )
-      return '', "Succesful! Recipe has been uploaded.";
+      filename = params[ 'fileName' ].split('.')[0]
+      recipe.yamlBucketKeyIs( con, filename )
+      recipe.audioBucketKeyIs( con, filename )
+      recipe.save( con )
+      return '', ( filename, filename )
 
 
 def getUserInfo( params, tokenString ):
-   user = rds_wrapper.User( con, params[ 'username' ], strict=True )
    try:
-      token = tokens.Token( user.username, token=tokenString )
-      assert token.isValid()
-   except AssertionError:
-      return 'Invalid authentication', []
-   return  '', { 'id' : user.id,
-                 'username' : user.username,
-                 'firstname' : user.firstname,
-                 'lastname' : user.lastname,
-                 'mobile' : user.mobile,
-                 'dateCreated' : '{}'.format( user.dateCreated ) }
+      user = rds_wrapper.User( con, id=params[ 'userId' ], strict=True )
+      print user.id
+      try:
+         token = tokens.Token( user.username, token=tokenString )
+         assert token.isValid()
+      except AssertionError:
+         return 'Invalid authentication', []
+      return  '', { 'id' : user.id,
+                    'username' : user.username,
+                    'firstname' : user.firstname,
+                    'lastname' : user.lastname,
+                    'mobile' : user.mobile,
+                    'dateCreated' : '{}'.format( user.dateCreated ) }
+   except KeyError:
+      return 'Username not found', []
 
 
 def getRecipe( params, tokenString ):
@@ -101,10 +118,11 @@ def getRecipe( params, tokenString ):
    except AssertionError:
       return 'Invalid authentication', []
    return '', { 'id' : recipe.id,
-                'bucket-yaml' : recipe.bucket,
+                'title' : recipe.title,
+                'bucketjson' : recipe.bucket,
                 'createdOn' : "{}".format( recipe.createdOn ),
                 'updatedOn' : "{}".format( recipe.updatedOn ),
-                'bucket-audio' : recipe.bucketAudio }
+                'bucketaudio' : recipe.bucketAudio }
 
 
 def getRecipes( params, tokenString ):
@@ -119,7 +137,8 @@ def getRecipes( params, tokenString ):
    results = []
    for recipe in recipes:
       results.append( { 'id' : recipe.id,
-        'bucket-yaml' : recipe.bucket,
+        'title' : recipe.title,
+        'bucketjson' : recipe.bucket,
         'createdOn' : "{}".format( recipe.createdOn ),
         'updatedOn' : "{}".format( recipe.updatedOn ),
         'bucket-audio' : recipe.bucketAudio } )
