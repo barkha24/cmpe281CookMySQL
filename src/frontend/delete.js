@@ -5,7 +5,7 @@
  */
 function deleteRecipe( userId, recipeTitle, token ) {
    requester =  new XMLHttpRequest();
-   requester.open( 'POST', 'http://dock2.hyunwookshin.com:8084/fileDelete', true );
+   requester.open( 'POST', 'http://cmpe281p2b-2f1e7577f6424524.elb.us-east-2.amazonaws.com/fileDelete', true );
    requester.setRequestHeader( 'token', token );
    var data = new FormData();
    data.append( 'fileName', recipeTitle );

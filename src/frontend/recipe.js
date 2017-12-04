@@ -5,7 +5,7 @@
  */
 function recipeInfo( recipeId, userId, token ) {
    requester =  new XMLHttpRequest();
-   requester.open( 'GET', 'http://dock2.hyunwookshin.com:8084/getRecipe?ownerId=' + userId + '&id=' + recipeId, true );
+   requester.open( 'GET', 'http://cmpe281p2b-2f1e7577f6424524.elb.us-east-2.amazonaws.com/getRecipe?ownerId=' + userId + '&id=' + recipeId, true );
    requester.setRequestHeader( 'token', token );
    requester.send( null );
    document.getElementById( 'recipeName' ).innerHTML = 'Loading recipe info...';

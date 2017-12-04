@@ -3,7 +3,7 @@ $(document).ready(function() {
     e.preventDefault();
     $.ajax({
     type: 'POST',
-    url: 'http://dock2.hyunwookshin.com:8084/authenticate',
+    url: 'http://cmpe281p2b-2f1e7577f6424524.elb.us-east-2.amazonaws.com/authenticate',
     data:{
             username: $("#username").val(),
             password: $("#password").val()
@@ -40,7 +40,7 @@ $(document).ready(function() {
     e.preventDefault();
     $.ajax({
     type: 'POST',
-    url: 'http://dock2.hyunwookshin.com:8084/signup',
+    url: 'http://cmpe281p2b-2f1e7577f6424524.elb.us-east-2.amazonaws.com/signup',
     data:{
 		       firstname:$("fname").val(),
 			     lastnmae :$("lname").val(),
@@ -51,7 +51,7 @@ $(document).ready(function() {
     success: function(data){
       // $.ajax({
       //     type: 'GET',
-      //     url: 'http:google.com'//'http://dock2.hyunwookshin.com:8084',
+      //     url: 'http:google.com'//'http://cmpe281p2b-2f1e7577f6424524.elb.us-east-2.amazonaws.com',
       //     headers: {"x-access-token": resultdata.token},
       //     success: function(newData){
       //         console.log('Success and Please login ');

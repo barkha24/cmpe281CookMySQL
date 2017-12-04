@@ -1,7 +1,7 @@
 function uploadFile( ownerId, token ) {
    requester =  new XMLHttpRequest();
    var data = new FormData();
-   requester.open( 'POST', 'http://dock2.hyunwookshin.com:8084/fileUpload', true );
+   requester.open( 'POST', 'http://cmpe281p2b-2f1e7577f6424524.elb.us-east-2.amazonaws.com/fileUpload', true );
    requester.setRequestHeader( 'token', token );
    data.append( 'ownerId', ownerId );
    data.append( 'file', document.getElementById("file").files[0] );

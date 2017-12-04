@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 # ########################
 # Backend Dependency installer
@@ -39,4 +39,10 @@ sudo cp -rf /tmp/deploy/server /cmpe281p2
 sudo cp -rf /tmp/deploy/flaskapp.py /cmpe281p2
 
 echo "Backend installer complete!"
-/cmpe281p2/flaskapp.py
+sudo pip install flask
+pip install flask_cors
+sudo pip install flask_cors
+sudo pip install flask_api
+
+export PYTHONPATH=/cmpe281p2:$PYTHONPATH
+AWS_ACCESS_ID=$1 AWS_SECRET_KEY=$2 MYSQL_PASS=$3 /cmpe281p2/flaskapp.py

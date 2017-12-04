@@ -26,8 +26,11 @@ Copy bld/frontend-installer.sh and the artifact (.tgz) to EC2 instance,
 and run the installer. The artifact should be in the same directory as the installer.
 
 ```
-./frontend-installer.sh
+sudo ./frontend-installer.sh
 ```
+Please note that the hostname to the backend ELB endpoint is hardcoded for this project.
+Therefore, you may need to manually change the endpoints, if the backend ELB
+server hostname changes.
 
 ## Backend installer
 
@@ -35,6 +38,6 @@ Copy bld/backend-installer.sh and the artifact (.tgz) to EC2 instance,
 and run the installer. The artifact should be in the same directory as the installer.
 
 ```
-./backend-installer.sh aws-key aws-id aws-secret mysqlpasswrd
+sudo ./backend-installer.sh aws-key aws-id aws-secret mysqlpasswrd
 
 ```

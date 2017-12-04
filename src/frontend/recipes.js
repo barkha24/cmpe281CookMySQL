@@ -4,7 +4,7 @@
  */
 function getRecipes( userId, token ) {
    requester =  new XMLHttpRequest();
-   requester.open( 'GET', 'http://dock2.hyunwookshin.com:8084/getRecipes?ownerId=' + userId, true );
+   requester.open( 'GET', 'http://cmpe281p2b-2f1e7577f6424524.elb.us-east-2.amazonaws.com/getRecipes?ownerId=' + userId, true );
    requester.setRequestHeader( 'token', token );
    requester.send( null );
    requester.onreadystatechange = function() {
