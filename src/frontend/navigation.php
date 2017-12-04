@@ -11,7 +11,7 @@
                <li><a href="view-recipe.php<?php echo $queryString; ?>">View Recipe</a></li>
                <li><a href="trending-recipes.html">Trending Recipes</a></li>
                <li><a href="about.php<?php echo $queryString; ?>">About Us</a>
-               <li><a href="contact-us.php<? php echo $queryString; ?>">Contact Us</a>
+               <li><a href="contact-us.php<?php echo $queryString; ?>">Contact Us</a>
                </li>
            </ul>
        </div>

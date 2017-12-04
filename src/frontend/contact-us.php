@@ -1,3 +1,7 @@
+<?php
+  $userId = $_GET['userId'];
+  $token = $_GET['token'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,31 +29,18 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script type="text/javascript" src="userinfo.js"></script>
+    <script type="text/javascript" src="recipes.js"></script>
+    <script type="text/javascript" src="delete.js"></script>
+    <script type="text/javascript" src="upload.js"></script>
+    <link href="recipe.css" rel="stylesheet">
 </head>
 
-<body>
+<body onload="
+       userInfo( '<?php echo $userId ?>', '<?php echo $token ?>', getRecipes );"
+>
       <!-- top-bar -->
-    <div class="top-bar">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-sm-5 hidden-xs">
-                    <div class="support-bar">
-                        <h1>Help To Cook-Chef Polly</h1>
-                        
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-4 col-sm-2 col-xs-12">
-                    <!--logo-->
-                    <!-- <div class="logo"><a href="index.html"><img src="images/logo.png" alt=""></a></div> -->
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-5 hidden-xs">
-                    <div class="support-bar">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include "banner.php";?>
     <!-- /.top-bar -->
     <!-- header-section-->
     <div class="header-wrapper">
@@ -57,19 +48,7 @@
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <!-- navigations-->
-                    <div class="navigation">
-                        <div id="navigation">
-                            <ul>
-                                <li class="active"><a href="home.html">Home</a></li>
-                                <li><a href="add-recipe.html">Add Recipe</a></li>
-                               <li><a href="view-recipe.html">View Recipe</a></li>
-                                <!-- <li><a href="trending-recipes.html">Trending Recipes</a></li> -->
-                                <li><a href="about.html">About Us</a>
-                                <li><a href="contact-us.html">Contact Us</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    <?php include "navigation.php"; ?>
                     <!-- /.navigations-->
                 </div>
             </div>
@@ -77,31 +56,6 @@
     </div>
     </div>
     <!-- /. header-section-->
-    <!-- page-header -->
-    <div class="page-header">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="page-section">
-                        <h1 class="page-title">Contact Us</h1>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="page-breadcrumb">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <ol class="breadcrumb">
-                            <li><a href="#">Home</a></li>
-                            <li>Contact us</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /.page-header-->
     <!-- contact us -->
     <div class="content">
         <div class="container">
@@ -237,3 +191,4 @@
 </body>
 
 </html>
+<? ?>
