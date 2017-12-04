@@ -1,5 +1,5 @@
 
-# Help me cook!
+# Help Me cook! ~Chef Polly
 
 - *University Name*: http://www.sjsu.edu/
 - *Course*: Cloud Technologies
