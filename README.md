@@ -7,6 +7,14 @@
 - *ISA*: Divyankitha Urs
 - *Group Members*: HYUNWOOK SHIN, MOJDEH KEYKHANZADEH, VIDHI SHARMA, BARKHA CHOITHANI
 
+## Settings
+
+The addresses used in the code are:
+- cook.hyunwookshin.com : CNAME for elb fronting the front-end web servers
+- cmpe281p2f-351513d65b031117.elb.us-east-2.amazonaws.com : hostname for elb fronting the backend-web servers 
+- d36tn81c22y883.cloudfront.net - cloudfront url for mp3 files
+
+
 ## To build existing artifiacts
 
 There is only one artificats for our project. To build the artifacts

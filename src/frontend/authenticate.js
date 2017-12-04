@@ -11,16 +11,16 @@ $(document).ready(function() {
     success: function(resultdata){
       console.log(resultdata);
       //result =  JSON.parse(resultdata)
-      $.ajax({
+      /*$.ajax({
           type: 'GET',
           url: 'http://dock2.hyunwookshin.com:8044/about.php?userId=' + resultdata.response.userId +"&token=" +  resultdata.response.token,
           headers: {"x-access-token": resultdata.token},
           success: function(newData){
               console.log('success');
-              //console.log(newData);
+              //console.log(newData);*/
               window.location= 'about.php?userId=' + resultdata.response.userId +"&token=" +  resultdata.response.token;
-         }
-       });
+         /*}
+       });*/
   },
   error: function( xhr, exception ) {
      if (xhr.status === 401) {

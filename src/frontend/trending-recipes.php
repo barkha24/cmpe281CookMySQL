@@ -150,7 +150,7 @@
 <script type ="text/javascript">
     $(document).ready(function(){
         var refreshID = setInterval(function(){
-            $.getJSON('http://dock2.hyunwookshin.com:8044/tweets_json.php?count=30',function(data)){
+            $.getJSON('http://cmpe281p2f-351513d65b031117.elb.us-east-2.amazonaws.com?count=30',function(data)){
                 list.Tweets(data);
                 $('#tweetlist').trigger('create');
             });

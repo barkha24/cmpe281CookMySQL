@@ -17,6 +17,6 @@ function uploadFile( ownerId, token ) {
 		  console.log( 'result is ' + info.result );
 	   }
 	   console.log( 'Returning to main page' );
-	   window.location.href = "http://dock2.hyunwookshin.com:8044/add-recipe.php?userId=" + ownerId + "&token=" + token;
+	   window.location.href = "http://cook.hyunwookshin.com?userId=" + ownerId + "&token=" + token;
    }
 }
