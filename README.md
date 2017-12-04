@@ -38,11 +38,11 @@ the recipe live while you cook!
    - Polly for converting from text to .mp3 (src/lambda)
    - IAM Role for Lambda
    - CloudFront for downloading .mp3 file
-   - User Authentication
 
    **EXtra Components**
    - Kinesis
    - DynamoDB
+   - User Authentication (Not secure connection, for demo purpose only)
 
 ## Demo for trying out
 - Endpoint is http://cook.hyunwookshin.com
