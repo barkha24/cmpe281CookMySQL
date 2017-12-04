@@ -31,9 +31,11 @@ echo "Deploying Application..."
 sudo rm -rf /tmp/deploy
 sudo tar -xvf cmpe281p2.tgz -C /tmp/deploy
 
-sudo rm -rf /cmpe281p1-backend
-sudo mkdir -p /cmpe281p2-backend
-sudo cp -rf /tmp/deploy/backend/* /cmpe281p2-backend
+sudo rm -rf /cmpe281p1
+sudo mkdir -p /cmpe281p2
+sudo cp -rf /tmp/deploy/backend/ /cmpe281p2
+sudo cp -rf /tmp/deploy/server /cmpe281p2
+sudo cp -rf /tmp/deploy/flaskapp.py /cmpe281p2
 
 echo "Backend installer complete!"
-/cmpe281p2-backend/flaskapp.py
+/cmpe281p2/flaskapp.py
