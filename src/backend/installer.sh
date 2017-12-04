@@ -11,8 +11,8 @@ if [ "$1" == "" ]; then
    exit 1
 fi
 
-if [ ! -f cmpe281p2.tgz ]; then
-   echo "Please copy cmpe281p2.tgz file to the current directory"
+if [ ! -f cmpe281p2.zip ]; then
+   echo "Please copy cmpe281p2.zip file to the current directory"
    exit 1
 fi
 
@@ -29,7 +29,8 @@ sudo pip install MySQL-python
 
 echo "Deploying Application..."
 sudo rm -rf /tmp/deploy
-sudo tar -xvf cmpe281p2.tgz -C /tmp/deploy
+sudo mkdir /tmp/deploy
+sudo unzip cmpe281p2.zip -d /tmp/deploy
 
 sudo rm -rf /cmpe281p1
 sudo mkdir -p /cmpe281p2

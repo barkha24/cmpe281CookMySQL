@@ -1,11 +1,11 @@
 all: build
-	ls cmpe281p2.tgz
+	ls cmpe281p2.zip
 
 clean:
 	$(MAKE) -C backend clean
 	$(MAKE) -C server clean
 	rm -rf bld
-	rm -rf cmpe281p2.tgz
+	rm -rf cmpe281p2.zip
 
 build:
 	rm -rf bld
@@ -16,6 +16,6 @@ build:
 	cp backend/installer.sh bld/backend-installer.sh
 	cp -r frontend bld
 	cp frontend/installer.sh bld/frontend-installer.sh
-	cd bld && tar -cvzf cmpe281p2.tgz .  || true
-	mv bld/cmpe281p2.tgz .
-	ls cmpe281p2.tgz
+	cd bld && zip -r cmpe281p2.zip .  || true
+	mv bld/cmpe281p2.zip .
+	ls cmpe281p2.zip
