@@ -34,7 +34,7 @@
     <script type="text/javascript" src="userinfo.js"></script>
     <script type="text/javascript" src="recipe.js"></script>
     <script type="text/javascript" src="upload.js"></script>
-    <link href="recipe.css" rel="stylesheet">
+    <link href="css/recipe.css" rel="stylesheet">
 </head>
 
 <body onload="recipeInfo( '<?php echo $recipeId?>', '<?php echo $userId ?>', '<?php echo $token ?>' );">

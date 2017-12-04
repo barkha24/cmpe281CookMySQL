@@ -32,7 +32,7 @@
     <script type="text/javascript" src="recipes.js"></script>
     <script type="text/javascript" src="delete.js"></script>
     <script type="text/javascript" src="upload.js"></script>
-    <link href="recipe.css" rel="stylesheet">
+    <link href="css/recipe.css" rel="stylesheet">
 </head>
 
 <body onload="
