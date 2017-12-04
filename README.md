@@ -7,6 +7,14 @@
 - *ISA*: Divyankitha Urs
 - *Group Members*: HYUNWOOK SHIN, MOJDEH KEYKHANZADEH, VIDHI SHARMA, BARKHA CHOITHANI
 
+## Introduction
+
+Feeling tired looking at the recipe while cooking? You are not alone. The traditional
+recipe pages and blogs are good for researching new recipes to try out. But, inside
+the kitchen envuronment, it is difficult to look up on the phone or search online.
+This app is designed to be like Siri of cooking, helping and guiding you through
+the recipe live while you cook!
+
 ## Settings
 
 The addresses used in the code are:
