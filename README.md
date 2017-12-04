@@ -44,6 +44,10 @@ the recipe live while you cook!
    - Kinesis
    - DynamoDB
 
+## Demo for trying out
+- Endpoint is http://cook.hyunwookshin.com
+- Please use the credentials (username: jholmes, password: helloworld)
+
 ## Settings
 
 The addresses used in the code are:
