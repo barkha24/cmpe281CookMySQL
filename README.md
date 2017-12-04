@@ -11,7 +11,7 @@
 
 Feeling tired looking at the recipe while cooking? You are not alone. The traditional
 recipe pages and blogs are good for researching new recipes to try out. But, inside
-the kitchen envuronment, it is difficult to look up on the phone or search online.
+the kitchen environment, it is difficult to check the next step on your phone or search online.
 This app is designed to be like Siri of cooking, helping and guiding you through
 the recipe live while you cook!
 
@@ -25,7 +25,7 @@ The addresses used in the code are:
 
 ## To build existing artifiacts
 
-There is only one artificats for our project. To build the artifacts
+There is only one artificat for our project. To build the artifacts
 please use the following.
 
 ```
@@ -55,5 +55,4 @@ and run the installer. The artifact should be in the same directory as the insta
 
 ```
 sudo ./backend-installer.sh aws-key aws-id aws-secret mysqlpasswrd
-
 ```
