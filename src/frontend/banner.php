@@ -13,7 +13,7 @@
                     <!-- <div class="logo"><a href="index.html"><img src="images/logo.png" alt=""></a></div> -->
                 </div>
                 <div id="userimage" class="userinfo">
-                    <img src="chef.png" style="width:30px;height:30px">
+                    <img src="assets/chef.png" style="width:30px;height:30px">
                 </div>
                 <div id="userinfo" class="userinfo" >
                     <div id='name'></div>
