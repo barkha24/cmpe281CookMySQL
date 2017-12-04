@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-5 hidden-xs">
                     <div class="support-bar">
-                        <h1>Help To Cook-Chef Polly</h1>
+                        <h1>Help Me Cook-Chef Polly</h1>
                         
                     </div>
                 </div>
