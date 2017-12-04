@@ -27,7 +27,8 @@ function getRecipes( userId, token ) {
              document.getElementById( 'delete' + i.toString() ).setAttribute(
 
                    'onclick', "deleteRecipe('" + userId + "','" + info.response[i].title + "','" +  token + "');");
-             document.getElementById( 'play' + i.toString() ).style.display = "";
+             document.getElementById( 'play' + i.toString() ).setAttribute(
+                   'onclick', 'window.location="http://d36tn81c22y883.cloudfront.net/' + info.response[i].bucketaudio + '"' );
           }
        } catch(e) {
           console.log( e );

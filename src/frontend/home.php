@@ -1,3 +1,7 @@
+<?php
+  $userId = $_GET['userId'];
+  $token = $_GET['token'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 

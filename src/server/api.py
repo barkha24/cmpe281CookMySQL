@@ -83,10 +83,10 @@ def postUploadRecipe( params, tokenString ):
       recipe = rds_wrapper.Recipe( con, params[ 'ownerId' ],
                                    params[ 'recipeTitle' ] )
       filename = params[ 'fileName' ].split('.')[0]
-      recipe.yamlBucketKeyIs( con, filename )
-      recipe.audioBucketKeyIs( con, filename )
+      recipe.yamlBucketKeyIs( con, filename + '.json' )
+      recipe.audioBucketKeyIs( con, filename + '.mp3' )
       recipe.save( con )
-      return '', ( filename, filename )
+      return '', ( filename + '.json', filename + '.mp3' )
 
 
 def getUserInfo( params, tokenString ):
@@ -141,7 +141,7 @@ def getRecipes( params, tokenString ):
         'bucketjson' : recipe.bucket,
         'createdOn' : "{}".format( recipe.createdOn ),
         'updatedOn' : "{}".format( recipe.updatedOn ),
-        'bucket-audio' : recipe.bucketAudio } )
+        'bucketaudio' : recipe.bucketAudio } )
    return '', results
 
 def api( endpoint, params, headers={} ):

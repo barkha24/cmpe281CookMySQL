@@ -16,7 +16,7 @@ function recipeInfo( recipeId, userId, token ) {
           info = JSON.parse( requester.response );
           console.log( 'app-error is ' + info.error );
           console.log( 'app-response is ' + info.error );
-          document.getElementById( 'content' ).innerHTML += '';
+          document.getElementById( 'content' ).innerHTML = '';
           if (info.response.title != undefined) {
              document.getElementById( 'recipeName' ).innerHTML = 'Rendering recipe info...';
              if ( requester.status == 200 ) {

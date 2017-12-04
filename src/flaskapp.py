@@ -120,7 +120,7 @@ def saveFile():
          return toJson( err, response )
 
       filename, _ = response
-      bucketkey = s3_helper.key( filename )
+      bucketkey = filename
       fContent = file.read()
 
       temporary_file = tempfile.NamedTemporaryFile()
@@ -182,7 +182,7 @@ def getUserInfo():
 def getRecipe():
    err, response = api.getRecipe( request.args, request.headers.get( 'token' ) )
    bucketKey = response[ 'bucketjson' ]
-   content = downloadfile( bucketKey + '.json' )
+   content = downloadfile( bucketKey )
    response[ 'content' ] = json.loads( content )
    return toJson( err, response )
 
